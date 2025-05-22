@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rahi's Study Hub</title>
@@ -250,10 +249,10 @@
       margin-top: 50px;
     }
   </style>
-  <!-- Original head content remains unchanged -->
-<script src="https://unpkg.com/@vercel/analytics@latest/dist/analytics.min.js"></script>
-<script>window.va = window.va || function() { (window.vaq = window.vaq || []).push(arguments); };</script>
-</head>
+   <script src="https://unpkg.com/@vercel/analytics@latest/dist/analytics.min.js"></script>
+   <script>
+     window.va = window.va || function() { (window.vaq = window.vaq || []).push(arguments); };
+   </script>
 </head>
 <body class="subject-science">
   <!-- Your name watermarked -->
@@ -342,9 +341,7 @@
   </div>
 
   <script>
-    import { inject } from '@vercel/analytics';
-    inject();
-    
+    va('init', { endpoint: '/_vercel/insights/script.js' });
     const flashcardsDatabase = {
       'science': {
         'physics': [],
