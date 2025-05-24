@@ -149,7 +149,7 @@
     }
     .flashcard {
       width: 100%;
-      height: 300px;
+      height: 400px; /* Increased height for images */
       position: relative;
       transform-style: preserve-3d;
       transition: transform 0.6s;
@@ -166,14 +166,15 @@
       height: 100%;
       backface-visibility: hidden;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 25px;
+      padding: 20px;
       box-sizing: border-box;
       background: var(--card-bg);
       border-radius: 15px;
       text-align: center;
-      font-size: 1.2rem;
+      overflow-y: auto;
     }
     .flashcard-back {
       transform: rotateY(180deg);
@@ -249,8 +250,30 @@
       font-style: italic;
       margin-top: 50px;
     }
+    /* Image styles */
+    .flashcard-img {
+      max-width: 100%;
+      max-height: 180px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    .flashcard-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+    .img-caption {
+      font-size: 0.9rem;
+      color: var(--text);
+      opacity: 0.8;
+    }
+    .dark-mode .img-caption {
+      color: white;
+    }
   </style>
-   
 </head>
 <body class="subject-science">
   <!-- Your name watermarked -->
@@ -312,10 +335,14 @@
           <div class="flashcard-corner fc-tr">Rahi Najeem</div>
           <div class="flashcard-corner fc-bl">Rahi Najeem</div>
           <div class="flashcard-corner fc-br">Rahi Najeem</div>
-          <p id="flashcardQuestion">Click "Next" to begin</p>
+          <div class="flashcard-content" id="flashcardQuestion">
+            <p>Click "Next" to begin</p>
+          </div>
         </div>
         <div class="flashcard-back">
-          <p id="flashcardAnswer">Your flashcards will appear here</p>
+          <div class="flashcard-content" id="flashcardAnswer">
+            <p>Your flashcards will appear here</p>
+          </div>
         </div>
       </div>
     </div>
@@ -339,208 +366,711 @@
   </div>
 
   <script>
-
+    // Flashcard Database with Image Support
     const flashcardsDatabase = {
       'science': {
-        'physics': [],
-        'human-body': [{ question: "What are the six classes of essential nutrients?", answer: "carbohydrates | fats | proteins | vitamins | minerals | water" },  
-{ question: "Which nutrients provide the body with energy?", answer: "carbohydrates | fats | proteins" },  
-{ question: "What unit is used to measure the energy released by nutrients?", answer: "calories" },  
-{ question: "How much energy (in calories) does one gram of fat provide?", answer: "9" },  
-{ question: "How much energy (in calories) does one gram of carbohydrate or protein provide?", answer: "carbohydrates: 4 | proteins: 4" },  
-{ question: "What is the definition of one calorie?", answer: "The energy needed to raise 1 gram of water by 1°C at 1 atmosphere pressure" },  
-{ question: "What is the difference between 'calorie' and 'Calorie'?", answer: "1 Calorie (capital C) = 1,000 calories (lowercase c) | 1 Calorie = 1 kilocalorie" },  
-{ question: "How is a food Calorie (kilocalorie) defined?", answer: "Energy needed to raise 1 kg of water by 1°C at 1 atmosphere pressure" },  
-{ question: "What happens when you 'burn' calories during physical activity?", answer: "Body loses energy | must restore calories by eating food" },  
-{ question: "What is the joule equivalent of 1 Calorie?", answer: "1 Calorie = 4.184 kilojoules" },  
-{ question: "What factors determine the body's energy needs?", answer: "Physical activity | growth rate | age | gender" },  
-{ question: "Why do children need more energy than adults?", answer: "Due to rapid growth" },  
-{ question: "What units are used to measure food energy?", answer: "Calories (kilocalories) | joules" },  
-{ question: "How does physical activity affect a person's energy needs?", answer: "More activity = higher calorie needs | Sedentary = light activity | Moderate = 150 mins/week | Active = 75+ mins vigorous/week" },  
-{ question: "What defines a 'sedentary' lifestyle?", answer: "Light daily activities (e.g., desk work, minimal exercise)" },  
-{ question: "How many Calories per day does a moderately active 14–18-year-old male need?", answer: "2,600" },  
-{ question: "How many Calories per day does a sedentary 19–30-year-old female need?", answer: "2,000" },  
-{ question: "Which age group has the highest Calorie needs for active males?", answer: "14–18 years | 3,000 Calories/day" },  
-{ question: "What is the Calorie requirement for an active 9–13-year-old female?", answer: "2,000" },  
-{ question: "What are the two major types of carbohydrates?", answer: "simple carbohydrates (sugars) | complex carbohydrates (starches & fiber)" },  
-{ question: "What is the main monosaccharide used for energy in the body?", answer: "glucose" },  
-{ question: "What are examples of foods high in simple carbohydrates?", answer: "fruits | milk | some vegetables" },  
-{ question: "What are examples of complex carbohydrates?", answer: "starch (potatoes, rice, corn) | fiber (whole grains, vegetables, nuts)" },  
-{ question: "Why can’t the human body digest fiber?", answer: "It cannot break fiber into sugar molecules" },  
-{ question: "What are the two main types of fats?", answer: "unsaturated fats | saturated fats" },  
-{ question: "What are examples of unsaturated fats?", answer: "olives | nuts | avocado | salmon" },  
-{ question: "What are examples of saturated fats?", answer: "meat | dairy | egg yolks | palm oil | coconut oil" },  
-{ question: "Why is cholesterol not a necessary part of the diet?", answer: "The liver produces all the cholesterol the body needs" },  
-{ question: "What are the functions of fats in the body?", answer: "cell structure | organ protection | heat retention" },  
-{ question: "What elements make up proteins?", answer: "nitrogen | hydrogen | carbon | oxygen" },  
-{ question: "What are the building blocks of proteins?", answer: "amino acids" },  
-{ question: "How many amino acids are used to build proteins?", answer: "21" },  
-{ question: "How are proteins structured?", answer: "amino acids → polypeptides → protein molecules" },  
-{ question: "What is the difference between essential and nonessential amino acids?", answer: "Nonessential amino acids (12) are made by the body | Essential amino acids (9) must come from food" },  
-{ question: "What are examples of foods rich in essential amino acids?", answer: "meat | milk | beans | eggs | poultry | fish | nuts | lentils" },  
-{ question: "What are the functions of amino acids in the body?", answer: "tissue growth | repair | energy source" },  
-{ question: "How many essential amino acids must be obtained from food?", answer: "9" },  
-{ question: "Why are proteins considered vital nutrients?", answer: "They supply amino acids for growth, repair, and energy" },  
-{ question: "How are vitamins classified based on solubility?", answer: "water-soluble (C, B) | fat-soluble (A, D, E, K)" },  
-{ question: "Why are vitamins important for the body?", answer: "essential for chemical reactions | obtained from food" },  
-{ question: "How do humans obtain minerals?", answer: "directly from plants/fruits | indirectly from animal products" },  
-{ question: "What are the functions of calcium, iron, and magnesium?", answer: "calcium: builds bones/teeth | iron: red blood cell function | magnesium: muscle function" },  
-{ question: "What percentage of body weight is water?", answer: "65–75%" },  
-{ question: "Why is water the most important nutrient?", answer: "vital processes occur in water (e.g., nutrient breakdown) | transports nutrients in blood" },  
-{ question: "What is the recommended daily water intake?", answer: "6–8 glasses (varies by age/weight)" },  
-{ question: "What are the key components of a balanced diet?", answer: "meets energy needs | provides all essential nutrients | includes variety" },  
-{ question: "Why is balancing food intake and energy use important?", answer: "maintains health | prevents deficiencies/excess" },  
-{ question: "What percentage of a healthy diet should be fruits/vegetables vs. grains/proteins?", answer: "50% fruits/vegetables | 50% grains/proteins" },  
-{ question: "What are recommended healthy fat sources?", answer: "olive oil | nuts | fish" },  
-{ question: "What saturated fats should be limited?", answer: "butter | red meat | cheese | bacon" },  
-{ question: "What is the recommendation for dairy consumption?", answer: "Limit to 1 serving/day" },  
-{ question: "What types of grains are preferred in a healthy diet?", answer: "whole grains (e.g., brown rice, whole wheat) | refined grains (e.g., white bread) limited" },  
-{ question: "What is the daily recommended limit for total fat?", answer: "< 70 g" },  
-{ question: "What is the daily limit for saturated fat?", answer: "< 20 g" },  
-{ question: "How much carbohydrates are recommended daily?", answer: "270 g" },  
-{ question: "What is the daily protein recommendation?", answer: "50 g" },  
-{ question: "What is the minimum daily fiber intake?", answer: "> 25 g" },  
-{ question: "How much physical activity is recommended daily?", answer: "At least 1 hour" },  
-{ question: "What beverages are encouraged over sugary juices?", answer: "water | unsweetened tea" },  
-{ question: "What protein sources are considered healthiest?", answer: "fish | lean meats | beans | nuts" },  
-{ question: "What information do food labels provide?", answer: "serving size | servings per container | calories | nutrients per serving | % daily values" },  
-{ question: "How many grams of protein are in one serving of this product?", answer: "24 g" },  
-{ question: "How many servings of this product would provide 100% of daily protein (based on 50g recommendation)?", answer: "~2 servings (48g)" },  
-{ question: "What percentage of daily sodium is in one serving?", answer: "28%" },  
-{ question: "What are the calories per gram for fats, carbs, and proteins?", answer: "fat: 9 | carbs: 4 | protein: 4" },  
-{ question: "What causes weight gain?", answer: "consuming more calories than burned" },  
-{ question: "What health risks are linked to obesity?", answer: "cardiovascular diseases | diabetes | other metabolic disorders" },  
-{ question: "What is starvation?", answer: "severe calorie deficiency | extreme malnutrition" },  
-{ question: "How is BMI calculated?", answer: "weight (kg) / height² (m²)" },  
-{ question: "What BMI range indicates obesity?", answer: "≥30" },  
-{ question: "Why is vitamin C considered an essential nutrient?", answer: "body cannot produce or store it | must be obtained through diet" },  
-{ question: "What are the key functions of vitamin C in the body?", answer: "tissue repair | wound healing | maintains bones/cartilage/teeth" },  
-{ question: "What health problems can vitamin C deficiency cause?", answer: "anemia | weakened immunity | gingivitis (gum inflammation)" },  
-{ question: "What makes a nutrient 'essential'?", answer: "body cannot synthesize it | must be obtained from food" },  
-{ question: "How often should vitamin C be consumed?", answer: "daily (since it’s water-soluble and not stored)" },  
-{ question: "What are the 3 main functions of the digestive system?", answer: "food breakdown | nutrient absorption | waste elimination" },  
-{ question: "What are the main organs of the digestive tract?", answer: "mouth | esophagus | stomach | small intestine | large intestine" },  
-{ question: "What are the two stages of digestion?", answer: "mechanical (physical breakdown) | chemical (enzymatic breakdown)" },  
-{ question: "Where does mechanical digestion begin?", answer: "mouth (teeth cut/grind food)" },  
-{ question: "What is the role of the digestive tract's accessory glands?", answer: "produce enzymes/fluids (e.g., bile, pancreatic juices) to aid digestion" },  
-{ question: "What is peristalsis?", answer: "muscle contractions that move food through the digestive tract" },  
-{ question: "What are villi?", answer: "finger-like projections in the small intestine that absorb nutrients" },  
-{ question: "What enzyme begins starch digestion in the mouth?", answer: "amylase" },  
-{ question: "What is bile and where is it produced?", answer: "fluid that breaks down fats | produced in the liver" },  
-{ question: "What is the duodenum?", answer: "first section of the small intestine (site of major chemical digestion)" },  
-{ question: "What is the role of enzymes in digestion?", answer: "speed up chemical reactions | break food into simpler, water-soluble molecules" },  
-{ question: "Why does mechanical digestion aid chemical digestion?", answer: "enzymes work more efficiently on smaller food particles" },  
-{ question: "What is enzyme specificity? Give an example.", answer: "each enzyme catalyzes one reaction | amylase breaks down starch (not proteins)" },  
-{ question: "What are the components of saliva?", answer: "water | mucus | amylase" },  
-{ question: "What does amylase break starch into?", answer: "maltose (a disaccharide of glucose)" },  
-{ question: "What is a bolus?", answer: "chewed food mixed with saliva | formed into a ball for swallowing" },  
-{ question: "How does the epiglottis prevent choking?", answer: "flaps down to cover trachea (windpipe) during swallowing" },  
-{ question: "Describe the 3-step swallowing process.", answer: "Bolus in mouth → epiglottis up (airflow open)\nSwallowing → epiglottis down (blocks trachea)\nFood in esophagus → epiglottis resets (airflow resumes)" },  
-{ question: "Define amylase.", answer: "enzyme in saliva that breaks down starch" },  
-{ question: "What is maltose?", answer: "disaccharide (2 glucose units) produced from starch digestion" },  
-{ question: "What is the trachea?", answer: "windpipe (air passage to lungs) | separate from esophagus" },  
-{ question: "What are the dimensions of the small intestine?", answer: "2.5 cm wide | 7 m long" },  
-{ question: "What is the duodenum?", answer: "upper part of small intestine | where digestion continues" },  
-{ question: "How does the small intestine protect itself from acidic chyme?", answer: "secretes mucus and water" },  
-{ question: "What is bile and where is it produced?", answer: "digestive fluid with salts | produced by liver | stored in gallbladder" },  
-{ question: "How does bile aid fat digestion?", answer: "emulsifies fats → increases surface area for lipase action" },  
-{ question: "What are the 3 major enzymes in pancreatic juice?", answer: "lipase | trypsin | pancreatic amylase" },  
-{ question: "What does each pancreatic enzyme break down?", answer: "lipase: fats → glycerol + fatty acids\ntrypsin: proteins → amino acids\npancreatic amylase: starch → maltose" },  
-{ question: "What is the role of sodium bicarbonate in pancreatic juice?", answer: "neutralizes acidic chyme | protects duodenum | creates optimal pH for enzymes" },  
-{ question: "Why is fat emulsification important?", answer: "increases surface area for lipase to act efficiently" },  
-{ question: "How does chyme change when entering the small intestine?", answer: "neutralized by sodium bicarbonate | enzymes further break down nutrients" },  
-{ question: "What is the function of the ileum?", answer: "digests remaining molecules | absorbs nutrients" },  
-{ question: "How is the ileum structured for absorption?", answer: "lined with thin layer of specialized cells" },  
-{ question: "What is a peptic ulcer?", answer: "painful sores in stomach/duodenum lining due to mucus erosion" },  
-{ question: "What are two main causes of peptic ulcers?", answer: "Helicobacter pylori bacteria | overuse of anti-inflammatory drugs" },  
-{ question: "What are common symptoms of peptic ulcers?", answer: "burning abdominal pain | nausea | vomiting" },  
-{ question: "Why does mucus erosion lead to ulcers?", answer: "exposes cells to stomach acid/enzymes → tissue damage" },  
-{ question: "Define ileum.", answer: "lower part of small intestine | site of final digestion/absorption" },  
-{ question: "What protects the stomach/duodenum from ulcers?", answer: "thick mucus layer" },  
-{ question: "How do villi and microvilli aid absorption?", answer: "increase surface area of small intestine | faster nutrient absorption" },  
-{ question: "What is inside each villus?", answer: "network of blood vessels | absorbs nutrients" },  
-{ question: "Where does most nutrient absorption occur?", answer: "small intestine walls (via villi)" },  
-{ question: "How do cells use glucose?", answer: "reacts with oxygen in cellular respiration → releases energy" },  
-{ question: "What are two functions of fats in cells?", answer: "build cell membranes | energy source (when oxidized)" },  
-{ question: "How are amino acids used?", answer: "synthesize proteins | build cell structures" },  
-{ question: "What enzyme digests starch in the mouth?", answer: "salivary amylase | breaks starch → maltose" },  
-{ question: "What is the stomach's role in protein digestion?", answer: "pepsin breaks proteins → polypeptides | acidic pH" },  
-{ question: "What 3 enzymes act in the small intestine?", answer: "trypsin (proteins → amino acids) | lipase (fats → glycerol + fatty acids) | pancreatic amylase (starch → maltose)" },  
-{ question: "Why is small intestine pH basic?", answer: "neutralizes acidic chyme | optimal for pancreatic enzymes" },  
-{ question: "Define villi.", answer: "finger-like projections in small intestine | increase absorption surface" },  
-{ question: "What is respiration in cells?", answer: "glucose + oxygen → energy + CO₂ + water" },  
-{ question: "What are the dimensions of the large intestine?", answer: "1.5 m long | 6 cm wide" },  
-{ question: "What are 3 functions of the large intestine?", answer: "absorbs water | houses gut bacteria | eliminates waste" },  
-{ question: "What is the role of gut bacteria in digestion?", answer: "breaks down undigested fibers → fatty acids | produces vitamins (e.g., vitamin K)" },  
-{ question: "How does waste exit the body?", answer: "rectum → anus (muscular opening)" },  
-{ question: "What materials are NOT digested by humans?", answer: "plant cell walls (e.g., lettuce, apple) | fiber" },  
-{ question: "What is diarrhea?", answer: "frequent, loose, watery stools due to reduced water absorption" },  
-{ question: "What causes diarrhea?", answer: "viral/bacterial infections | parasites | rapid stool passage" },  
-{ question: "Why is hydration critical during diarrhea?", answer: "large intestine absorbs less water → risk of dehydration" },  
-{ question: "How does diarrhea disrupt normal digestion?", answer: "increases fluid secretion | decreases absorption | speeds up stool movement" },  
-{ question: "Define rectum.", answer: "final section of large intestine | stores waste before elimination" },  
-{ question: "What is the anus?", answer: "muscular opening at end of rectum | controls waste release" },  
-{ question: "What is the main function of the excretory system?", answer: "removes liquid/gas wastes | maintains homeostasis" },  
-{ question: "What are the 3 primary excretory organs?", answer: "kidneys | lungs | skin" },  
-{ question: "What waste products do each organ remove?", answer: "kidneys: liquid waste (urea, excess water)\nlungs: CO₂ + water vapor\nskin: water, heat, salts (via sweat)" },  
-{ question: "What is urea?", answer: "nitrogenous waste filtered by kidneys | from protein breakdown" },  
-{ question: "Define nephron.", answer: "functional unit of kidney | filters blood to form urine" },  
-{ question: "What is perspiration?", answer: "sweat (water + salts) excreted by skin to cool body" },  
-{ question: "What is the path of urine excretion?", answer: "kidneys → ureters → bladder → urethra" },  
-{ question: "How does the skin participate in excretion?", answer: "releases sweat (water, salts, urea) | regulates temperature" },  
-{ question: "What visible evidence shows lungs excrete water?", answer: "water vapor in exhaled breath (e.g., fog on cold glass)" },  
-{ question: "Why is waste elimination vital for homeostasis?", answer: "balances internal environment | prevents toxin buildup" },  
-{ question: "What two liquid wastes must the body remove?", answer: "excess water | urea" },  
-{ question: "What are the excretory functions of the skin?", answer: "removes excess water/heat/waste | regulates temperature via sweat" },  
-{ question: "What is sweat composed of?", answer: "water | salts (e.g., NaCl) | small amounts of urea" },  
-{ question: "How does sweating cool the body?", answer: "evaporation of sweat from skin absorbs heat" },  
-{ question: "What is perspiration?", answer: "process of sweat production/excretion" },  
-{ question: "What organs make up the urinary system?", answer: "2 kidneys | 2 ureters | bladder | urethra" },  
-{ question: "Describe kidney structure/location.", answer: "bean-shaped | ~10 cm long | located near lower back above waist" },  
-{ question: "Why are kidneys called 'body filters'?", answer: "continuously filter blood | remove wastes (e.g., urea) | return useful substances to blood" },  
-{ question: "What is the path of urine flow?", answer: "kidneys → ureters → bladder → urethra" },  
-{ question: "Define ureter.", answer: "tube carrying urine from kidney to bladder" },  
-{ question: "What is the urethra?", answer: "tube that expels urine from bladder to outside body" },  
-{ question: "What is the urinary bladder?", answer: "muscular sac storing urine before elimination" },  
-{ question: "What percentage of blood enters kidneys with each heartbeat?", answer: "~20% via renal arteries" },  
-{ question: "What wastes do kidneys remove from blood?", answer: "urea | excess water | other dissolved wastes" },  
-{ question: "What is urea?", answer: "nitrogenous waste from protein breakdown" },  
-{ question: "What is urine composed of?", answer: "water | urea | dissolved wastes" },  
-{ question: "What is the path of urine from kidneys to excretion?", answer: "kidneys → ureters → bladder → urethra" },  
-{ question: "How much urine can the bladder store?", answer: "up to 1 liter" },  
-{ question: "How is urine expelled from the body?", answer: "bladder muscles contract → urine flows through urethra" },  
-{ question: "What are kidney stones?", answer: "crystalized aggregates of filtered substances" },  
-{ question: "What problems do large kidney stones cause?", answer: "block ureters | prevent urine flow | cause pain/blood in urine" },  
-{ question: "How are kidney stones treated?", answer: "ultrasound breaks stones into smaller passable fragments" },  
-{ question: "Define renal arteries.", answer: "blood vessels supplying kidneys with blood to filter" },  
-{ question: "What are ureters?", answer: "tubes carrying urine from kidneys to bladder" },  
-{ question: "What is the urethra?", answer: "exit tube for urine from bladder to outside body" },  
-{ question: "What is a nephron?", answer: "functional unit of kidney | tiny tube that filters blood" },  
-{ question: "How does blood enter the nephron?", answer: "via renal artery → branches into capillaries" },  
-{ question: "What substances are filtered out of blood in the nephron?", answer: "urea | water | glucose | salts" },  
-{ question: "What substances are NOT filtered out in the nephron?", answer: "blood cells | large proteins" },  
-{ question: "What happens to filtered glucose and water?", answer: "reabsorbed into blood (not excreted in urine)" },  
-{ question: "How does urine form in nephrons?", answer: "urea + excess water + wastes accumulate in tubules" },  
-{ question: "What is the role of collecting ducts?", answer: "gather urine from nephrons → send to ureters" },  
-{ question: "How does filtered blood exit the kidneys?", answer: "through renal veins" },  
-{ question: "What is the path of urine after nephrons?", answer: "collecting ducts → ureters → bladder → urethra" },  
-{ question: "Define renal artery.", answer: "brings unfiltered blood to kidneys" },  
-{ question: "What is the renal vein?", answer: "carries filtered blood away from kidneys" },  
-{ question: "What is reabsorption in nephrons?", answer: "process of returning useful substances (glucose/water) to blood" },  
-{ question: "How does the body regulate water reabsorption in nephrons?", answer: "adjusts based on body's water needs | more water retained when dehydrated" },  
-{ question: "What happens to urine when the body has excess water?", answer: "dilute urine (more water excreted)" },  
-{ question: "What happens to urine when the body is dehydrated?", answer: "concentrated urine (less water excreted)" },  
-{ question: "Why is water reabsorption important?", answer: "prevents cell swelling (overhydration) or dehydration" },  
-{ question: "What determines the concentration of urine?", answer: "amount of water reabsorbed in nephrons" },  
-{ question: "How does water reabsorption change in dehydration?", answer: "increases to conserve water" },  
-{ question: "What is the result of minimal water reabsorption?", answer: "large volume of dilute urine" },  
-{ question: "What is the role of nephrons in water balance?", answer: "selectively reabsorb water to maintain homeostasis" },  
-{ question: "How does urine volume relate to hydration?", answer: "high volume = well-hydrated | low volume = dehydrated" }  ],
-        'chemistry': []
+        'physics': [
+          {
+            question: "Solve this physics equation:",
+            questionImg: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Newton%27s_laws_of_motion.svg/1200px-Newton%27s_laws_of_motion.svg.png",
+            answer: "F = ma (Newton's Second Law)",
+            answerImg: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Free_body_diagram.svg/1200px-Free_body_diagram.svg.png"
+          },
+          {
+            question: "What does this circuit diagram represent?",
+            questionImg: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Ohm%27s_Law_with_Voltage_source.svg/1200px-Ohm%27s_Law_with_Voltage_source.svg.png",
+            answer: "Simple circuit with resistor and voltage source",
+            answerImg: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Ohm%27s_Law_Series_Circuit.svg/1200px-Ohm%27s_Law_Series_Circuit.svg.png"
+          }
+        ],
+        'human-body': [
+  {
+    "question": "What foods are mentioned as examples in the book?",
+    "answer": "Steak, chicken, sausages, vegetables, beans, and beverages."
+  },
+  {
+    "question": "Why is food essential for humans?",
+    "answer": "It provides materials for survival, including energy and nutrients."
+  },
+  {
+    "question": "Why does studying or playing sports make you hungry?",
+    "answer": "These activities require energy, which comes from food."
+  },
+  {
+    "question": "List the six essential nutrient classes.",
+    "answer": "Carbohydrates, fats, proteins, vitamins, minerals, water."
+  },
+  {
+    "question": "Which three nutrients provide energy?",
+    "answer": "Carbohydrates, fats, proteins."
+  },
+  {
+    "question": "Do vitamins, minerals, or water provide energy? Cite evidence.",
+    "answer": "No. Figure 1 shows their energy contribution as zero.",
+    "answerImg": "https://www.dropbox.com/scl/fi/ysiebo1xw89pm5t05io4r/Screenshot-2025-05-24-091402.png?rlkey=ihv5wezxp4o9qaiayjcwci5u9&st=wnc2oh1e&dl=0"
+  },
+  {
+    "question": "Define one calorie as per the book.",
+    "answer": "The energy needed to raise 1 gram of water by 1°C at 1 atm pressure."
+  },
+  {
+    "question": "Rank fats, carbs, and proteins by energy/gram using Figure 1.",
+    "answer": "Fats (highest) > Carbohydrates ≈ Proteins.",
+    "questionImg": "https://www.dropbox.com/scl/fi/ysiebo1xw89pm5t05io4r/Screenshot-2025-05-24-091402.png?rlkey=ihv5wezxp4o9qaiayjcwci5u9&st=wnc2oh1e&dl=0"
+  },
+  {
+    "question": "How much more energy do fats provide than proteins? (Use Figure 1)",
+    "answer": "~2x more (e.g., fats ~9 cal/gram vs. proteins ~4 cal/gram).",
+    "questionImg": "https://www.dropbox.com/scl/fi/ysiebo1xw89pm5t05io4r/Screenshot-2025-05-24-091402.png?rlkey=ihv5wezxp4o9qaiayjcwci5u9&st=wnc2oh1e&dl=0"
+  },
+  {
+    "question": "Besides energy, what do nutrients support?",
+    "answer": "Survival and growth."
+  },
+  {
+    "question": "How does the book define a \"Calorie\" (capital C)?",
+    "answer": "1 Calorie = 1,000 calories (1 kcal); the energy needed to raise 1 kg of water by 1°C at 1 atm pressure."
+  },
+  {
+    "question": "What units measure food energy? (Checkpoint question)",
+    "answer": "Calories (capital C) and joules (1 Calorie = 4.184 kilojoules)."
+  },
+  {
+    "question": "Why does physical activity increase the need to eat?",
+    "answer": "Activity \"burns\" calories, and the body restores them through food."
+  },
+  {
+    "question": "List 4 factors affecting energy needs.",
+    "answer": "Physical activity, growth rate, age, gender."
+  },
+  {
+    "question": "Why might a teenager need more calories than an adult?",
+    "answer": "Due to higher growth rates and physical activity."
+  },
+  {
+    "question": "Define \"sedentary,\" \"moderately active,\" and \"active\" lifestyles.",
+    "answer": "Sedentary: Light daily activities.\nModerately active: 150 mins/week of moderate exercise (e.g., walking).\nActive: 75 mins/week of vigorous sports (e.g., jogging, basketball).",
+    "answerImg": "https://www.dropbox.com/scl/fi/r3jx0ltfhipr14ptw1cr2/Screenshot-2025-05-24-110052.png?rlkey=0ouf4fplsmii4dy2mqrbpcrn7&st=9sqksiyv&dl=0"
+  },
+  {
+    "question": "How many Calories/day does a sedentary 14-year-old girl need?",
+    "answer": "1,800 Calories (from Table 1).",
+    "questionImg": "https://www.dropbox.com/scl/fi/r3jx0ltfhipr14ptw1cr2/Screenshot-2025-05-24-110052.png?rlkey=0ouf4fplsmii4dy2mqrbpcrn7&st=9sqksiyv&dl=0"
+  },
+  {
+    "question": "Compare energy needs for active 14-18-year-old males vs. females.",
+    "answer": "Males: 3,000 Cal; Females: 2,400 Cal.",
+    "questionImg": "https://www.dropbox.com/scl/fi/r3jx0ltfhipr14ptw1cr2/Screenshot-2025-05-24-110052.png?rlkey=0ouf4fplsmii4dy2mqrbpcrn7&st=9sqksiyv&dl=0"
+  },
+  {
+    "question": "Why do 2-3-year-olds need fewer Calories than 14-18-year-olds despite rapid growth?",
+    "answer": "Teens have higher muscle mass and activity levels, outweighing growth rate."
+  },
+  {
+    "question": "Convert 500 Calories to kilojoules using the book's formula.",
+    "answer": "500 Cal × 4.184 kJ/Cal = 2,092 kJ."
+  },
+  {
+    "question": "What elements compose carbohydrates?",
+    "answer": "Carbon, oxygen, and hydrogen."
+  },
+  {
+    "question": "What are the two major types of carbohydrates? (Checkpoint)",
+    "answer": "Simple sugars (monosaccharides/disaccharides) and complex carbohydrates (polysaccharides like starch and fiber)."
+  },
+  {
+    "question": "Why is glucose important?",
+    "answer": "It's the major energy source for the body (monosaccharide from broken-down carbs)."
+  },
+  {
+    "question": "Why can't the body use fiber for energy?",
+    "answer": "It cannot be broken down into sugar molecules.",
+    "answerImg": "https://www.dropbox.com/scl/fi/ao4mgs404srewx9d4768w/Screenshot-2025-05-24-111601.png?rlkey=a6rv0r4dzx91xav59dri9rc4h&st=7z5k4f83&dl=0"
+  },
+  {
+    "question": "What elements compose fats?",
+    "answer": "Carbon, oxygen, and hydrogen (glycerol + fatty acids)."
+  },
+  {
+    "question": "List 3 roles of fats in the body.",
+    "answer": "Cell structure, organ protection/support, and heat retention."
+  },
+  {
+    "question": "Compare saturated and unsaturated fats. (Checkpoint)",
+    "answer": "Saturated: Solid at room temp (animal products, palm/coconut oil); high cholesterol.\nUnsaturated: Liquid at room temp (vegetables, seafood like salmon).",
+    "answerImg": "https://www.dropbox.com/scl/fi/ao4mgs404srewx9d4768w/Screenshot-2025-05-24-111601.png?rlkey=a6rv0r4dzx91xav59dri9rc4h&st=7z5k4f83&dl=0"
+  },
+  {
+    "question": "Is dietary cholesterol necessary? Why?",
+    "answer": "No—the liver produces all needed cholesterol."
+  },
+  {
+    "question": "What elements compose proteins?",
+    "answer": "Nitrogen, hydrogen, carbon, and oxygen."
+  },
+  {
+    "question": "What distinguishes essential vs. nonessential amino acids? (Checkpoint)",
+    "answer": "Nonessential: 12 made by the body.\nEssential: 9 obtained from food (meat, milk, beans, eggs)."
+  },
+  {
+    "question": "Name 2 vital roles of amino acids.",
+    "answer": "Tissue growth/repair and energy source.",
+    "answerImg": "https://www.dropbox.com/scl/fi/kkbddo9geamanpz4drgjk/Screenshot-2025-05-24-111843.png?rlkey=3d7zjt3hmsym0qwwkoes7cvwp&st=1i835chl&dl=0"
+  },
+  {
+    "question": "List 4 foods rich in proteins.",
+    "answer": "Meat, poultry, fish, dairy, nuts, beans, lentils."
+  },
+  {
+    "question": "Why might fats provide more energy than carbs/proteins per gram? (Link to earlier graph)",
+    "answer": "Fats have higher calorie density (~9 Cal/g) due to molecular structure."
+  },
+  {
+    "question": "How does fiber intake support health despite lacking energy?",
+    "answer": "Aids digestion and nutrient absorption (implied by indigestibility)."
+  },
+  {
+    "question": "How are vitamins classified? Give examples of each type.",
+    "answer": "Water-soluble: Vitamins C & B\nFat-soluble: Vitamins A, D, E, K",
+    "answerImg": "https://www.dropbox.com/scl/fi/yessjbr17fnc3ax10y6te/Screenshot-2025-05-24-112054.png?rlkey=h6g277ugpwjsbmouj1wg7vkoe&st=si8cvd5n&dl=0"
+  },
+  {
+    "question": "Why are vitamins essential?",
+    "answer": "They enable critical chemical reactions in the body."
+  },
+  {
+    "question": "How do humans obtain minerals?",
+    "answer": "Directly from plants/fruits or indirectly via animal products."
+  },
+  {
+    "question": "Why is calcium important?",
+    "answer": "Builds bones and teeth."
+  },
+  {
+    "question": "Identify functions of iron and magnesium.",
+    "answer": "Iron: Supports red blood cell function\nMagnesium: Essential for muscle function"
+  },
+  {
+    "question": "What percentage of body weight is water?",
+    "answer": "65-75%"
+  },
+  {
+    "question": "List 3 roles of water in the body.",
+    "answer": "Medium for nutrient breakdown\nMain component of blood/fluids\nTransports nutrients",
+    "answerImg": "https://www.dropbox.com/scl/fi/yessjbr17fnc3ax10y6te/Screenshot-2025-05-24-112054.png?rlkey=h6g277ugpwjsbmouj1wg7vkoe&st=si8cvd5n&dl=0"
+  },
+  {
+    "question": "What is the recommended daily water intake?",
+    "answer": "6-8 glasses (varies by age/weight)."
+  },
+  {
+    "question": "What 3 criteria define a balanced diet?",
+    "answer": "Meets energy needs\nProvides all essential nutrients\nIncludes nutrient variety"
+  },
+  {
+    "question": "Why must food intake match energy use?",
+    "answer": "To maintain health and prevent imbalances."
+  },
+  {
+    "question": "Contrast vitamins and minerals in origin and requirement.",
+    "answer": "Vitamins: Made by living things; needed in small amounts\nMinerals: From soil; required for structural/functional roles"
+  },
+  {
+    "question": "Why is water \"the most important nutrient\"?",
+    "answer": "All vital processes (e.g., digestion, transport) depend on it."
+  },
+  {
+    "question": "According to Figure 8, how should a healthy diet be divided?",
+    "answer": "50% fruits & vegetables\n50% grains & proteins",
+    "questionImg": "https://www.dropbox.com/scl/fi/pspj7fig1axodjrdbw5ed/Screenshot-2025-05-24-110458.png?rlkey=nzmm1on3h4t0j9hlxevue64r6&st=703ji3er&dl=0"
+  },
+  {
+    "question": "Which food class should dominate daily intake per Figure 8?",
+    "answer": "Fruits and vegetables (50% of diet)."
+  },
+  {
+    "question": "Compare healthy vs. limited fats with examples.",
+    "answer": "Healthy: Olive oil\nLimit: Butter (saturated fat)"
+  },
+  {
+    "question": "What's better: whole grains or refined grains? Give examples.",
+    "answer": "Whole grains (e.g., brown rice) > refined grains (e.g., white bread)."
+  },
+  {
+    "question": "List 3 healthy protein sources to prioritize.",
+    "answer": "Fish, lean meats, beans, nuts."
+  },
+  {
+    "question": "What are the rules for sugars and dairy?",
+    "answer": "Minimize added sugars\nLimit dairy to 1 serving/day"
+  },
+  {
+    "question": "What daily Calorie intake does Table 2 assume?",
+    "answer": "2,000 Calories.",
+    "questionImg": "https://www.dropbox.com/scl/fi/pspj7fig1axodjrdbw5ed/Screenshot-2025-05-24-110458.png?rlkey=nzmm1on3h4t0j9hlxevue64r6&st=703ji3er&dl=0"
+  },
+  {
+    "question": "Using Table 2, what's the recommended daily:\na) Carbohydrate intake?\nb) Saturated fat limit?",
+    "answer": "a) 270g carbs\nb) <20g saturated fat"
+  },
+  {
+    "question": "How much fiber is advised daily per Table 2?",
+    "answer": ">25g."
+  },
+  {
+    "question": "How much daily physical activity is recommended?",
+    "answer": "At least 1 hour."
+  },
+  {
+    "question": "Why might fruits/vegetables and grains/proteins share equal plate space?",
+    "answer": "Ensures balanced micronutrient (vitamins/minerals) and macronutrient (energy) intake."
+  },
+  {
+    "question": "Could someone need more than 2,000 Calories/day? What would adjust?",
+    "answer": "Yes—active teens/adults need more; macros scale up proportionally (e.g., 3,000 Cal = 1.5x all values)."
+  },
+  {
+    "question": "Why are food labels useful?",
+    "answer": "They help evaluate/comparе nutritional value per serving and show:\nCalories/nutrients per serving\nServings per container"
+  },
+  {
+    "question": "If daily protein need = 50g (from Table 2), how many servings of this product (24g protein/serving) meet that need?",
+    "answer": "~2 servings (48g).",
+    "questionImg": "https://www.dropbox.com/scl/fi/pudj1i5ypptkn995walok/Screenshot-2025-05-24-110649.png?rlkey=t9f69zv1zvbqmrq0tvdg25e4h&st=m7vtd53h&dl=0"
+  },
+  {
+    "question": "What does \"15g Total Fat = 21% DV\" imply?",
+    "answer": "One serving provides 21% of the recommended daily fat intake (based on 2,000 Cal)."
+  },
+  {
+    "question": "If you eat the entire container (4 servings), how many calories do you consume?",
+    "answer": "310 Cal × 4 = 1,240 Calories."
+  },
+  {
+    "question": "What is obesity, and what health risks does it pose?",
+    "answer": "Excess fat accumulation harming health (e.g., cardiovascular diseases)."
+  },
+  {
+    "question": "What happens with severe Caloric deficiency?",
+    "answer": "Extreme malnutrition → starvation."
+  },
+  {
+    "question": "How is BMI calculated? Write the formula.",
+    "answer": "BMI = weight (kg) / height² (m)"
+  },
+  {
+    "question": "Calculate BMI for a person who is 1.75m tall and weighs 68kg.",
+    "answer": "BMI = 68 / 1.75² = 22.2"
+  },
+  {
+    "question": "Why might %DV be inaccurate for some people?",
+    "answer": "Based on 2,000 Cal; needs vary by age/activity (e.g., athletes need more)."
+  },
+  {
+    "question": "Why can't BMI alone determine health?",
+    "answer": "Doesn't distinguish fat/muscle (e.g., athletes may have high BMI but low fat)."
+  },
+  {
+    "question": "If a food has 10g sugar/serving and you eat 3 servings, what %DV of \"Total Sugars\" (90g max) is that?",
+    "answer": "(30g / 90g) × 100 = 33% DV"
+  },
+  {
+    "question": "Which is worse per serving: 5g saturated fat or 3g trans fat? Why?",
+    "answer": "Trans fat (no safe intake; saturated fat has 20g daily limit)."
+  },
+  {
+    "question": "Why is vitamin C considered an essential nutrient?",
+    "answer": "The body cannot produce or store it; must be obtained daily from food."
+  },
+  {
+    "question": "List 3 vital roles of vitamin C in the body.",
+    "answer": "Wound healing\nMaintenance of cartilage, bones, and teeth\nTissue repair and growth"
+  },
+  {
+    "question": "What health problems can vitamin C deficiency cause?",
+    "answer": "Anemia\nReduced infection resistance\nGingivitis (gum inflammation)"
+  },
+  {
+    "question": "What defines an \"essential nutrient\"?",
+    "answer": "Nutrients the body cannot produce; must be obtained through diet."
+  },
+  {
+    "question": "Why do water-soluble vitamins (like vitamin C) require daily intake?",
+    "answer": "They are not stored in the body; excess is excreted."
+  },
+  {
+    "question": "What are the three main functions of the digestive system?",
+    "answer": "Breakdown of food\nAbsorption of nutrients into blood\nElimination of waste"
+  },
+  {
+    "question": "List the 5 main organs of the digestive tract.",
+    "answer": "Mouth → Esophagus → Stomach → Small intestine → Large intestine",
+    "answerImg": "https://www.dropbox.com/scl/fi/acbgs7c3cluh35fzs1x9n/Screenshot-2025-05-24-112338.png?rlkey=1ipwq0cgmpmszt6pyuq7t86t8&st=wg8pfhzw&dl=0"
+  },
+  {
+    "question": "Compare mechanical and chemical digestion. Where does each begin?",
+    "answer": "Mechanical: Physical breakdown (teeth cutting/grinding in mouth)\nChemical: Enzymatic breakdown (e.g., amylase in saliva)"
+  },
+  {
+    "question": "Match these enzymes to their roles:\na) Amylase\nb) Pepsin\nc) Lipase",
+    "answer": "a) Carbohydrate breakdown (mouth/small intestine)\nb) Protein digestion (stomach)\nc) Fat breakdown (small intestine)"
+  },
+  {
+    "question": "What two digestive processes begin in the mouth?",
+    "answer": "Mechanical digestion (chewing)\nChemical digestion (salivary amylase acts on carbs)"
+  },
+  {
+    "question": "How does food move through the esophagus?",
+    "answer": "Via peristalsis (wave-like muscle contractions)"
+  },
+  {
+    "question": "Why is pepsinogen (not pepsin) secreted in the stomach?",
+    "answer": "Pepsinogen is inactive; converts to pepsin (active enzyme) in acidic stomach pH."
+  },
+  {
+    "question": "How do villi enhance nutrient absorption in the small intestine?",
+    "answer": "Increase surface area for nutrient uptake into bloodstream."
+  },
+  {
+    "question": "What is bile's primary function in digestion?",
+    "answer": "Emulsifies fats (breaks them into smaller droplets for lipase action)."
+  },
+  {
+    "question": "If the esophagus is blocked, which digestive functions are compromised?",
+    "answer": "All downstream processes (stomach/small intestine digestion/absorption)."
+  },
+  {
+    "question": "Why can't pepsin digest fats or amylase digest proteins?",
+    "answer": "Enzymes are substrate-specific (pepsin only cleaves peptide bonds)."
+  },
+  {
+    "question": "What are the two stages of food digestion?",
+    "answer": "Mechanical (physical breakdown) and chemical (enzymatic breakdown)."
+  },
+  {
+    "question": "What is an enzyme, and why is it specific?",
+    "answer": "A protein that speeds up reactions; each enzyme works on only one substrate (e.g., amylase only breaks down starch)."
+  },
+  {
+    "question": "What does salivary amylase do to starch? Where does this occur?",
+    "answer": "Breaks starch into maltose (glucose disaccharide) in the mouth."
+  },
+  {
+    "question": "Why do enzymes work better on small food particles?",
+    "answer": "Increased surface area for enzyme-substrate contact."
+  },
+  {
+    "question": "How is a bolus created, and what is its purpose?",
+    "answer": "Tongue mixes chewed food with saliva into a soft ball for easy swallowing."
+  },
+  {
+    "question": "How does the epiglottis prevent choking?",
+    "answer": "Flaps down to block the trachea during swallowing, directing food to the esophagus.",
+    "questionImg": "https://www.dropbox.com/scl/fi/hllk3hdqhyz4leep2jay4/Screenshot-2025-05-24-110825.png?rlkey=b0mnq8grgiw9lcz9gdalegosy&st=rhfzm4r7&dl=0"
+  },
+  {
+    "question": "List 3 components of saliva and their functions.",
+    "answer": "Water: Dissolves food\nMucus: Lubricates food\nAmylase: Begins starch digestion"
+  },
+  {
+    "question": "If amylase is denatured, what digestive process is impaired?",
+    "answer": "Starch → maltose conversion; may cause undigested carbs in gut."
+  },
+  {
+    "question": "Why can't you breathe while swallowing?",
+    "answer": "Epiglottis blocks trachea temporarily (see Figure 13 phases)."
+  },
+  {
+    "question": "What is the primary role of the esophagus?",
+    "answer": "To move food from the mouth to the stomach via peristalsis."
+  },
+  {
+    "question": "Describe peristalsis and its importance.",
+    "answer": "Wave-like muscle contractions that push food through the digestive tract; ensures one-directional movement."
+  },
+  {
+    "question": "Describe the stomach's shape and muscular features.",
+    "answer": "J-shaped organ with elastic walls and 3 layers of smooth muscles (allows stretching and mixing).",
+    "answerImg": "https://www.dropbox.com/scl/fi/7kuiwinxhukjtlxu4r6mt/Screenshot-2025-05-24-112515.png?rlkey=qqhl3khmc393hp7i16uu3xquj&st=8o2i3yc2&dl=0"
+  },
+  {
+    "question": "List 3 functions of the stomach.",
+    "answer": "Temporary food storage\nMechanical mixing (churning)\nProtein digestion initiation"
+  },
+  {
+    "question": "Where do stomach digestive juices come from?",
+    "answer": "Glands in the stomach lining (see Figure 15)."
+  },
+  {
+    "question": "Why does the stomach need three muscle layers?",
+    "answer": "To enable powerful churning (mechanical digestion) in multiple directions."
+  },
+  {
+    "question": "Why does the stomach release food slowly into the small intestine?",
+    "answer": "To allow proper nutrient absorption and avoid overwhelming the intestine."
+  },
+  {
+    "question": "What enables mechanical digestion in the stomach?",
+    "answer": "Three layers of smooth muscles contract involuntarily to mash and mix food with gastric fluids."
+  },
+  {
+    "question": "Why does the stomach need three muscle layers?",
+    "answer": "To generate powerful, multidirectional contractions for thorough food mixing."
+  },
+  {
+    "question": "What two key substances does gastric juice contain?",
+    "answer": "Hydrochloric acid (HCl) and pepsinogen (inactive pepsin)."
+  },
+  {
+    "question": "How is pepsin activated, and what does it digest?",
+    "answer": "HCl converts pepsinogen → pepsin; pepsin breaks proteins into polypeptides."
+  },
+  {
+    "question": "What is chyme, and how is it created?",
+    "answer": "A soupy mixture formed when stomach muscles/enzymes liquefy food."
+  },
+  {
+    "question": "Why doesn't the stomach digest itself?",
+    "answer": "Thick mucus shields the stomach lining from HCl and pepsin."
+  },
+  {
+    "question": "Why is pepsin initially secreted as pepsinogen?",
+    "answer": "To prevent premature enzyme activity from damaging stomach glands."
+  },
+  {
+    "question": "How does HCl's low pH aid digestion?",
+    "answer": "Activates pepsin\nDissolves food minerals\nKills ingested pathogens"
+  },
+  {
+    "question": "Could pepsin digest carbohydrates? Why?",
+    "answer": "No—pepsin only cleaves peptide bonds in proteins (enzyme specificity)."
+  },
+  {
+    "question": "What happens to chyme in the duodenum?",
+    "answer": "Digestion continues with juices from pancreas/liver; acidic chyme is neutralized."
+  },
+  {
+    "question": "How does the small intestine protect itself from stomach acid?",
+    "answer": "Secretes mucus/water and receives sodium bicarbonate from pancreatic juice."
+  },
+  {
+    "question": "How does bile aid fat digestion?",
+    "answer": "Emulsifies fats → increases surface area for lipase action."
+  },
+  {
+    "question": "Trace bile's path from production to use.",
+    "answer": "Liver → gallbladder → small intestine via duct."
+  },
+  {
+    "question": "Name the three major pancreatic enzymes and their substrates.",
+    "answer": "Lipase: Fats → glycerol + fatty acids\nTrypsin: Proteins → amino acids\nPancreatic amylase: Starch → maltose"
+  },
+  {
+    "question": "What are two functions of sodium bicarbonate?",
+    "answer": "Neutralizes acidic chyme\nProtects duodenum from HCl/pepsin"
+  },
+  {
+    "question": "Why must chyme be neutralized for pancreatic enzymes?",
+    "answer": "Pancreatic enzymes (e.g., trypsin) require alkaline pH to function."
+  },
+  {
+    "question": "How do bile and lipase work together?",
+    "answer": "Bile emulsifies fats → lipase breaks them down efficiently."
+  },
+  {
+    "question": "What is the primary function of the ileum?",
+    "answer": "To digest remaining undigested molecules and absorb nutrients."
+  },
+  {
+    "question": "How does the ileum's structure support absorption?",
+    "answer": "Lined with thin cell layer (maximizes surface area for nutrient uptake)."
+  },
+  {
+    "question": "What is a peptic ulcer?",
+    "answer": "Painful sores in stomach/duodenum lining due to mucus layer damage."
+  },
+  {
+    "question": "What are two causes of peptic ulcers?",
+    "answer": "Helicobacter pylori infection\nAnti-inflammatory drug use",
+    "answerImg": "https://www.dropbox.com/scl/fi/i218nf4tulq5dlxrxgzy0/Screenshot-2025-05-24-112759.png?rlkey=rq73ozc5hs7mlepiyif85jm4z&st=x81zq1sf&dl=0"
+  },
+  {
+    "question": "List three symptoms of peptic ulcers.",
+    "answer": "Burning abdominal pain\nNausea\nVomiting"
+  },
+  {
+    "question": "Why does mucus erosion lead to ulcers?",
+    "answer": "Exposes cells to stomach acid → tissue damage and sores and mucus also protects the stomach from acid."
+  },
+  {
+    "question": "Why are duodenal ulcers more common than stomach ulcers?",
+    "answer": "Duodenum lacks stomach's thick mucus protection against acid."
+  },
+  {
+    "question": "What is one key advantage of villi in the small intestine?",
+    "answer": "Increase surface area for faster nutrient absorption.",
+    "answerImg": "https://www.dropbox.com/scl/fi/56t5v7pqcz4ztyudh95u3/Screenshot-2025-05-24-112909.png?rlkey=s4ra8m7xadd9vg3hnypkb7yeb&st=zlqx7sk5&dl=0"
+  },
+  {
+    "question": "Describe how villi and microvilli enhance absorption.",
+    "answer": "Villi: Fingerlike projections create ridges\nMicrovilli: Microscopic protrusions on villi cells → further increase surface area"
+  },
+  {
+    "question": "How do nutrients enter the bloodstream?",
+    "answer": "Pass from villi surface cells → blood vessels within each villus."
+  },
+  {
+    "question": "What happens to absorbed glucose in cells?",
+    "answer": "React with oxygen in cellular respiration to release energy."
+  },
+  {
+    "question": "List two uses of absorbed fats.",
+    "answer": "Build cell membranes\nEnergy production (reacts with oxygen)"
+  },
+  {
+    "question": "How are amino acids used by cells?",
+    "answer": "Synthesize proteins for cell structure/function."
+  },
+  {
+    "question": "What do gut bacteria in the large intestine do?",
+    "answer": "Break down undigested fibers → short fatty acids\nProduce vitamins (e.g., vitamin K)"
+  },
+  {
+    "question": "What happens to water in the large intestine?",
+    "answer": "Absorbed into bloodstream; remaining waste forms stool."
+  },
+  {
+    "question": "What is diarrhea?",
+    "answer": "Loose, watery stools due to reduced fluid absorption/increased secretion in large intestine."
+  },
+  {
+    "question": "What are two common causes of diarrhea?",
+    "answer": "Viral/bacterial intestinal infections\nParasite-contaminated food/water"
+  },
+  {
+    "question": "Why would a smooth small intestine impair health?",
+    "answer": "Reduced surface area → slower/less nutrient absorption → malnutrition."
+  },
+  {
+    "question": "Why is hydration critical during diarrhea?",
+    "answer": "Large intestine absorbs less water → risk of severe fluid loss."
+  },
+  {
+    "question": "What are three ways the excretory system removes waste?",
+    "answer": "Kidneys: Filter blood → urine\nLungs: Exhale CO₂ + water vapor\nSkin: Sweat (water/salt/heat)",
+    "answerImg": "https://www.dropbox.com/scl/fi/igof8binqhtqsfjnw9mhn/Screenshot-2025-05-24-113135.png?rlkey=t665fg5g99j9hbyw3jqgq9mnz&st=9zcazlw6&dl=0"
+  },
+  {
+    "question": "Why is waste elimination vital?",
+    "answer": "Maintains equilibrium (homeostasis) between nutrients used and wastes produced."
+  },
+  {
+    "question": "What does sweat contain?",
+    "answer": "Water, salt, and other wastes."
+  },
+  {
+    "question": "How does sweating cool the body?",
+    "answer": "Evaporation of sweat from skin removes heat."
+  },
+  {
+    "question": "Why are kidneys called \"body filters\"?",
+    "answer": "They continuously filter blood → remove wastes (urea) → return needed substances to blood."
+  },
+  {
+    "question": "Trace the flow of urine from kidneys to excretion.",
+    "answer": "Kidneys → ureters → bladder → urethra."
+  },
+  {
+    "question": "How do lungs and skin complement kidney function?",
+    "answer": "Lungs: Remove gaseous waste (CO₂)\nSkin: Eliminates heat/water/salts kidneys don't process"
+  },
+  {
+    "question": "Why must kidneys filter blood continuously?",
+    "answer": "To prevent toxin buildup (e.g., urea) that disrupts homeostasis."
+  },
+  {
+    "question": "What percentage of blood enters the kidneys with each heartbeat? What wastes are removed?",
+    "answer": "~20% via renal arteries; removes urea, water, and other wastes."
+  },
+  {
+    "question": "What is urine composed of?",
+    "answer": "Watery fluid containing urea and other waste molecules."
+  },
+  {
+    "question": "Trace the route of waste from kidneys to excretion.",
+    "answer": "Kidneys → ureters → bladder → urethra → outside body.",
+    "questionImg": "https://www.dropbox.com/scl/fi/e89s3pi7qbsg43ukv381n/Screenshot-2025-05-24-111040.png?rlkey=omryuqccoz75xfpqdyrd7yrdp&st=gcb1hs7p&dl=0"
+  },
+  {
+    "question": "What is the role of ureters?",
+    "answer": "Transport urine from kidneys to bladder."
+  },
+  {
+    "question": "How much urine can the bladder store? How is it expelled?",
+    "answer": "Up to 1 liter; muscular walls contract to push urine through urethra."
+  },
+  {
+    "question": "How do kidney stones form?",
+    "answer": "Aggregated crystals from filtered substances in kidneys."
+  },
+  {
+    "question": "What are two signs of kidney stones?",
+    "answer": "Severe pain and blood in urine."
+  },
+  {
+    "question": "How are large kidney stones treated?",
+    "answer": "Broken into smaller fragments by ultrasound for easier passage.",
+    "answerImg": "https://www.dropbox.com/scl/fi/oeji58njnswgnrnzl01ol/Screenshot-2025-05-24-113406.png?rlkey=6sqrwijrx0cefhvkubgiurlmz&st=5pgdjjpt&dl=0"
+  },
+  {
+    "question": "Why do large kidney stones cause severe pain?",
+    "answer": "They obstruct ureters → urine backs up in kidneys → pressure/pain."
+  },
+  {
+    "question": "Why must kidneys filter blood continuously?",
+    "answer": "Prevents toxic buildup of urea/wastes in bloodstream."
+  },
+  {
+    "question": "What is a nephron?",
+    "answer": "The functional unit of the kidney; a tiny tube that filters blood to form urine."
+  },
+  {
+    "question": "How does blood enter and exit the nephron?",
+    "answer": "Enters: Via renal artery → capillaries in nephron\nExits: Filtered blood returns through renal vein"
+  },
+  {
+    "question": "What does the nephron capsule do?",
+    "answer": "Collects filtered materials (urea, water, glucose) from capillaries."
+  } ],
+        'chemistry': [
+          {
+            question: "Identify the highlighted element on the periodic table:",
+            questionImg: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Simple_Periodic_Table_Chart-en.svg/1200px-Simple_Periodic_Table_Chart-en.svg.png",
+            answer: "Oxygen (O) - Atomic number 8",
+            answerImg: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Oxygen-usage-in-aquaculture.jpg/1200px-Oxygen-usage-in-aquaculture.jpg"
+          },
+          {
+            question: "What type of chemical bond is shown here?",
+            questionImg: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Covalent_bond_hydrogen.svg/1200px-Covalent_bond_hydrogen.svg.png",
+            answer: "Covalent bond - Sharing of electrons between atoms"
+          }
+        ]
       },
       'math': {
-        'algebra3': [],
-        'geometry2': []
+        'algebra3': [
+          {
+            question: "Solve this quadratic equation:",
+            questionImg: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Quadratic_formula.svg/1200px-Quadratic_formula.svg.png",
+            answer: "x = [-b ± √(b²-4ac)] / 2a (Quadratic Formula)"
+          }
+        ],
+        'geometry2': [
+          {
+            question: "Calculate the area of this shape:",
+            questionImg: "https://www.dropbox.com/scl/fi/oeji58njnswgnrnzl01ol/Screenshot-2025-05-24-113406.png?rlkey=6sqrwijrx0cefhvkubgiurlmz&st=ibsem1cf&dl=0",
+            answer: "Area = ½ × base × height (Triangle area formula)"
+          }
+        ]
       },
       'social-studies': {
         'social-studies': []
@@ -884,8 +1414,35 @@
       flashcardContainerEl.style.display = 'block';
       
       const card = filteredCards[currentCardIndex];
-      questionEl.textContent = card.question;
-      answerEl.textContent = card.answer;
+      
+      // Update question side
+      questionEl.innerHTML = '';
+      const questionText = document.createElement('p');
+      questionText.textContent = card.question;
+      questionEl.appendChild(questionText);
+      
+      if (card.questionImg) {
+        const img = document.createElement('img');
+        img.src = card.questionImg;
+        img.className = 'flashcard-img';
+        img.alt = 'Question image';
+        questionEl.appendChild(img);
+      }
+      
+      // Update answer side
+      answerEl.innerHTML = '';
+      const answerText = document.createElement('p');
+      answerText.textContent = card.answer;
+      answerEl.appendChild(answerText);
+      
+      if (card.answerImg) {
+        const img = document.createElement('img');
+        img.src = card.answerImg;
+        img.className = 'flashcard-img';
+        img.alt = 'Answer image';
+        answerEl.appendChild(img);
+      }
+      
       progressEl.textContent = `Card ${currentCardIndex + 1} of ${filteredCards.length}`;
       
       // Reset flip state
@@ -931,9 +1488,17 @@
     function updateReviewBox() {
       if (wrongCards.length > 0) {
         reviewBoxEl.style.display = 'block';
-        wrongCardsListEl.innerHTML = wrongCards.map(card => 
-          `<li>${card.question} → <strong>${card.answer}</strong></li>`
-        ).join('');
+        wrongCardsListEl.innerHTML = wrongCards.map(card => {
+          let content = `<li>${card.question}`;
+          if (card.questionImg) {
+            content += ` <small>[Image]</small>`;
+          }
+          content += ` → <strong>${card.answer}</strong>`;
+          if (card.answerImg) {
+            content += ` <small>[Image]</small>`;
+          }
+          return content + '</li>';
+        }).join('');
       } else {
         reviewBoxEl.style.display = 'none';
       }
